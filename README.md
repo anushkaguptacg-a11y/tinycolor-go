@@ -1,151 +1,263 @@
-# Go TinyColor
+# TinyColor-Go
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/yourusername/tinycolor.svg)](https://pkg.go.dev/github.com/yourusername/tinycolor)
-[![Go Report Card](https://goreportcard.com/badge/github.com/yourusername/tinycolor)](https://goreportcard.com/report/github.com/yourusername/tinycolor)
-[![Build Status](https://github.com/yourusername/tinycolor/actions/workflows/go.yml/badge.svg)](https://github.com/yourusername/tinycolor/actions)
-[![codecov](https://codecov.io/gh/yourusername/tinycolor/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/yourusername/tinycolor)
+![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+[![CI](https://github.com/anushkaguptacg-a11y/tinycolor-go/actions/workflows/go.yml/badge.svg)](https://github.com/anushkaguptacg-a11y/tinycolor-go/actions/workflows/go.yml)
 
-A strict, fast, and feature-complete Go port of the popular JavaScript [TinyColor](https://github.com/bgrins/TinyColor) color manipulation and parsing library. 
+A feature-complete Go port of the original JavaScript **TinyColor** library with strict behavioral compatibility, comprehensive testing, WCAG accessibility utilities, and GitHub Actions CI.
 
-Developed to achieve 100% behavioral parity with the JavaScript implementation, this Go library handles all inputs, CSS formatting quirks, mathematical conversions, and color manipulations exactly like the original.
+This project preserves TinyColor's parsing quirks, conversion logic, formatting behavior, manipulation semantics, and edge cases while providing an idiomatic Go API.
+
+---
 
 ## Features
 
-- **Strict Parser Parity**: Supports all CSS color notations (`rgb`, `rgba`, `hsl`, `hsla`, `hsv`, `hsva`, 3/4/6/8-character hex, CSS named colors, and `transparent`) with loose spacing and wrapping matches.
-- **Conversion Symmetry**: RGB, HSL, and HSV conversion logic preserved exactly, maintaining raw float precision.
-- **In-place Mutation**: Modifying methods (`Lighten`, `Darken`, `Saturate`, `Desaturate`, `Spin`, `Brighten`) mutate the instance and return the same pointer for chaining, matching JavaScript's mutation semantics.
-- **WCAG 2.0 Readability**: Contrast ratio calculations (`Readability`), standard WCAG check combinations (`IsReadable`), and optimal color selections (`MostReadable`) with custom fallbacks and float-point tolerance.
-- **JavaScript Rounding Emulation**: Built-in `jsRound` helper matching JavaScript's `Math.round` rounding logic (rounding `.5` towards positive infinity) rather than Go's default round-away-from-zero logic.
+- ✅ Complete TinyColor API implemented in Go
+- ✅ CSS color parsing
+  - RGB / RGBA
+  - HSL / HSLA
+  - HSV / HSVA
+  - Hex (#RGB, #RGBA, #RRGGBB, #RRGGBBAA)
+  - CSS named colors
+  - `transparent`
+- ✅ RGB ↔ HSL ↔ HSV conversions
+- ✅ Color formatting
+  - Hex / Hex8
+  - RGB / Percentage RGB
+  - HSL / HSV
+  - CSS color names
+- ✅ Color manipulation
+  - Lighten
+  - Darken
+  - Brighten
+  - Saturate
+  - Desaturate
+  - Greyscale
+  - Spin
+  - Mix
+- ✅ Color combinations
+  - Complement
+  - Triad
+  - Tetrad
+  - Analogous
+  - Split Complement
+  - Monochromatic
+- ✅ WCAG 2.0 Readability utilities
+- ✅ GitHub Actions CI
+- ✅ JavaScript-compatible rounding behavior
+- ✅ Extensive unit tests and compatibility regression tests
 
 ---
 
 ## Installation
 
 ```bash
-go get github.com/yourusername/tinycolor
+go get github.com/anushkaguptacg-a11y/tinycolor-go
 ```
-
-*(Note: Recommend checking out this project as your Go package import path.)*
 
 ---
 
-## Usage Examples
+# Usage
 
-### 1. Initialization and Parsing
-
-Initialize colors from strings, structs, or ratios:
+## Parse Colors
 
 ```go
 package main
 
 import (
 	"fmt"
-	"github.com/yourusername/tinycolor"
+
+	"github.com/anushkaguptacg-a11y/tinycolor-go"
 )
 
 func main() {
-	// From hex
-	c1 := tinycolor.Parse("#f00")
-	fmt.Println(c1.HexString(false)) // "#ff0000"
+	color := tinycolor.Parse("#3498db")
 
-	// From CSS named color
-	c2 := tinycolor.Parse("saddlebrown")
-	fmt.Println(c2.Hex8String(false)) // "#8b4513ff"
-
-	// From HSL / HSV struct
-	c3 := tinycolor.Parse(tinycolor.HSL{H: 120, S: 0.5, L: 0.5})
-	fmt.Println(c3.RGBString()) // "rgb(64, 191, 64)"
-
-	// From Ratio (0.0 to 1.0 values)
-	c4 := tinycolor.FromRatio(tinycolor.RGB{R: 0.5, G: 0.5, B: 0.5})
-	fmt.Println(c4.HexString(false)) // "#808080"
+	fmt.Println(color.HexString(false))
+	fmt.Println(color.RGBString())
+	fmt.Println(color.HSLString())
 }
 ```
 
-### 2. Output Formatting
+---
 
-Format colors to multiple standard representations:
-
-```go
-c := tinycolor.Parse("rgba(255, 0, 0, 0.5)")
-
-fmt.Println(c.RGBString())            // "rgba(255, 0, 0, 0.5)"
-fmt.Println(c.PercentageRGBString())  // "rgba(100%, 0%, 0%, 0.5)"
-fmt.Println(c.HexString(false))       // "#ff0000" (automatically ignores alpha)
-fmt.Println(c.Hex8String(true))       // "#f008" (shortened Hex8)
-fmt.Println(c.HSLString())            // "hsla(0, 100%, 50%, 0.5)"
-fmt.Println(c.Filter())               // "progid:DXImageTransform.Microsoft.gradient(startColorstr=#80ff0000,endColorstr=#80ff0000)"
-```
-
-### 3. Modifications (Chainable)
-
-Modifying operations change the instance in place and return the same pointer:
+## Color Manipulation
 
 ```go
 c := tinycolor.Parse("#6699cc")
 
-// Chained manipulations mutating the instance in place
-c.Lighten(10).Saturate(20).Spin(30)
-fmt.Println(c.HexString(false)) // "#7d7de8"
+c.Lighten(10).
+	Saturate(20).
+	Spin(30)
+
+fmt.Println(c.HexString(false))
+
+// Output:
+// #7d7de8
 ```
 
-### 4. Combinations
+---
 
-Combinations return slices of *new* color instances without mutating the original:
+## Color Combinations
 
 ```go
 c := tinycolor.Parse("red")
 
-// Complementary color
-comp := c.Complement()
-fmt.Println(comp.HexString(false)) // "#00ffff"
-fmt.Println(c.HexString(false))    // "#ff0000" (original remains unchanged)
-
-// Triad combination
 triad := c.Triad()
+
 for _, color := range triad {
 	fmt.Println(color.HexString(false))
 }
-// Outputs: #ff0000, #00ff00, #0000ff
 ```
 
-### 5. WCAG 2 Readability Calculations
+Output
+
+```
+#ff0000
+#00ff00
+#0000ff
+```
+
+---
+
+## WCAG Readability
 
 ```go
-// Readability contrast ratio
 ratio := tinycolor.Readability("#000", "#fff")
-fmt.Println(ratio) // 21.0
 
-// AA check for small text
-fmt.Println(tinycolor.IsReadable("#ff0088", "#5c1a72")) // false
+fmt.Println(ratio)
 
-// AA check for large text
-fmt.Println(tinycolor.IsReadable("#ff0088", "#5c1a72", tinycolor.WCAG2Opts{
-	Level: "AA",
-	Size:  "large",
-})) // true
+// Output:
+// 21
+```
 
-// Optimal foreground selection
-best := tinycolor.MostReadable("#123", []interface{}{"#124", "#125", "#fff"}, tinycolor.WCAG2Opts{
-	IncludeFallbackColors: true,
-})
-fmt.Println(best.HexString(false)) // "#ffffff" (falls back to white for best contrast)
+Checking accessibility:
+
+```go
+ok := tinycolor.IsReadable(
+	"#ff0088",
+	"#5c1a72",
+	tinycolor.WCAG2Opts{
+		Level: "AA",
+		Size: "large",
+	},
+)
+
+fmt.Println(ok)
+```
+
+Finding the most readable color:
+
+```go
+best := tinycolor.MostReadable(
+	"#123",
+	[]interface{}{
+		"#124",
+		"#125",
+		"#fff",
+	},
+	tinycolor.WCAG2Opts{
+		IncludeFallbackColors: true,
+	},
+)
+
+fmt.Println(best.HexString(false))
 ```
 
 ---
 
-## Benchmarks
+## Formatting
 
-High-performance benchmarks performed on a **13th Gen Intel Core i7-1360P** running Windows 11:
+```go
+c := tinycolor.Parse("rgba(255,0,0,0.5)")
+
+fmt.Println(c.RGBString())
+fmt.Println(c.PercentageRGBString())
+fmt.Println(c.HexString(false))
+fmt.Println(c.Hex8String(true))
+fmt.Println(c.HSLString())
+fmt.Println(c.Filter())
+```
+
+Produces
 
 ```
-BenchmarkParse-16         	   81492	     18918 ns/op	    2953 B/op	      96 allocs/op
-BenchmarkConversion-16    	 9023144	       172.2 ns/op	      16 B/op	       2 allocs/op
-BenchmarkFormatting-16    	  828511	      1247 ns/op	     112 B/op	      12 allocs/op
+rgba(255, 0, 0, 0.5)
+rgba(100%, 0%, 0%, 0.5)
+#ff0000
+#f008
+hsla(0, 100%, 50%, 0.5)
+progid:DXImageTransform.Microsoft.gradient(...)
 ```
 
 ---
 
-## License
+# Testing
 
-This project is licensed under the MIT License - see the `LICENSE` file for details.
+Run all tests
+
+```bash
+go test ./...
+```
+
+Run verbose tests
+
+```bash
+go test -v ./...
+```
+
+Run benchmarks
+
+```bash
+go test -bench=. -benchmem
+```
+
+Run static analysis
+
+```bash
+go vet ./...
+```
+
+---
+
+# Benchmarks
+
+Benchmarks executed on a **13th Gen Intel Core i7-1360P**.
+
+| Benchmark                  | Performance |
+| -------------------------- | ----------: |
+| Parse                      | ~18.9 µs/op |
+| RGB ↔ HSL / HSV Conversion |  ~172 ns/op |
+| Formatting                 |  ~1.2 µs/op |
+
+---
+
+# Project Highlights
+
+- Complete TinyColor API
+- Strict JavaScript behavioral compatibility
+- Extensive compatibility regression tests
+- JavaScript rounding emulation (`Math.round`)
+- WCAG accessibility utilities
+- GitHub Actions CI
+- MIT Licensed
+
+---
+
+# Credits
+
+This project is a Go port of the original **TinyColor** JavaScript library.
+
+Original project:
+
+https://github.com/bgrins/TinyColor
+
+Full credit goes to **Brian Grinstead** and all TinyColor contributors for the original implementation and algorithms.
+
+---
+
+# License
+
+This project is licensed under the MIT License.
+
+See the [LICENSE](LICENSE) file for details.
