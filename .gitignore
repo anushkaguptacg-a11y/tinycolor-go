@@ -1,0 +1,29 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
+# Coverage
+coverage
+coverage.out
+*.coverprofile
+
+# IDE
+.vscode/
+.idea/
+
+# Go workspace
+go.work
+go.work.sum
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db
