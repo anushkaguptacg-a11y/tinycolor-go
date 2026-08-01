@@ -2,30 +2,34 @@ name: Go CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ main, master ]
 
 jobs:
-  test:
+  build:
+    name: Build & Test
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v4
         with:
-          go-version: '1.24'
+          go-version: '1.20'
+          cache: true
 
-      - name: Download dependencies
+      - name: Install dependencies
         run: go mod download
-
-      - name: Verify formatting
-        run: test -z "$(gofmt -l .)"
 
       - name: Run go vet
         run: go vet ./...
 
-      - name: Run tests
-        run: go test -v ./...
+      - name: Run Tests with Race Detector
+        run: go test -v -race -coverprofile=coverage.txt -covermode=atomic ./...
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}

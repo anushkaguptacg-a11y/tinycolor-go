@@ -7,6 +7,9 @@ import (
 
 // RGBString returns a string representation of the color in rgb or rgba format
 func (c *Color) RGBString() string {
+	if c == nil {
+		return ""
+	}
 	r := jsRound(c.r)
 	g := jsRound(c.g)
 	b := jsRound(c.b)
@@ -18,6 +21,9 @@ func (c *Color) RGBString() string {
 
 // PercentageRGB returns the percentage representation of each channel
 func (c *Color) PercentageRGB() PercentageRGB {
+	if c == nil {
+		return PercentageRGB{}
+	}
 	return PercentageRGB{
 		R: fmt.Sprintf("%.0f%%", jsRound(bound01(c.r, 255)*100.0)),
 		G: fmt.Sprintf("%.0f%%", jsRound(bound01(c.g, 255)*100.0)),
@@ -28,6 +34,9 @@ func (c *Color) PercentageRGB() PercentageRGB {
 
 // PercentageRGBString returns a percentage representation string
 func (c *Color) PercentageRGBString() string {
+	if c == nil {
+		return ""
+	}
 	r := jsRound(bound01(c.r, 255) * 100.0)
 	g := jsRound(bound01(c.g, 255) * 100.0)
 	b := jsRound(bound01(c.b, 255) * 100.0)
@@ -39,26 +48,41 @@ func (c *Color) PercentageRGBString() string {
 
 // Hex returns the hex string representation of the color (without # prefix)
 func (c *Color) Hex(allow3Char bool) string {
+	if c == nil {
+		return ""
+	}
 	return rgbToHex(c.r, c.g, c.b, allow3Char)
 }
 
 // HexString returns the hex representation with # prefix
 func (c *Color) HexString(allow3Char bool) string {
+	if c == nil {
+		return ""
+	}
 	return "#" + c.Hex(allow3Char)
 }
 
 // Hex8 returns the hex8 representation of the color (without # prefix)
 func (c *Color) Hex8(allow4Char bool) string {
+	if c == nil {
+		return ""
+	}
 	return rgbaToHex(c.r, c.g, c.b, c.a, allow4Char)
 }
 
 // Hex8String returns the hex8 representation with # prefix
 func (c *Color) Hex8String(allow4Char bool) string {
+	if c == nil {
+		return ""
+	}
 	return "#" + c.Hex8(allow4Char)
 }
 
 // HSLString returns the HSL/HSLA string representation of the color
 func (c *Color) HSLString() string {
+	if c == nil {
+		return ""
+	}
 	hsl := rgbToHsl(c.r, c.g, c.b)
 	h := jsRound(hsl.H * 360.0)
 	s := jsRound(hsl.S * 100.0)
@@ -71,6 +95,9 @@ func (c *Color) HSLString() string {
 
 // HSVString returns the HSV/HSVA string representation of the color
 func (c *Color) HSVString() string {
+	if c == nil {
+		return ""
+	}
 	hsv := rgbToHsv(c.r, c.g, c.b)
 	h := jsRound(hsv.H * 360.0)
 	s := jsRound(hsv.S * 100.0)
@@ -83,6 +110,9 @@ func (c *Color) HSVString() string {
 
 // Name returns the matching named CSS color name
 func (c *Color) Name() (string, bool) {
+	if c == nil {
+		return "", false
+	}
 	if c.a == 0 {
 		return "transparent", true
 	}
@@ -98,6 +128,9 @@ func (c *Color) Name() (string, bool) {
 
 // Filter returns Internet Explorer gradient filter syntax
 func (c *Color) Filter(secondColor ...interface{}) string {
+	if c == nil {
+		return ""
+	}
 	hex8String := "#" + rgbaToArgbHex(c.r, c.g, c.b, c.a)
 	secondHex8String := hex8String
 	gradientType := ""
@@ -106,13 +139,18 @@ func (c *Color) Filter(secondColor ...interface{}) string {
 	}
 	if len(secondColor) > 0 && secondColor[0] != nil {
 		s := Parse(secondColor[0])
-		secondHex8String = "#" + rgbaToArgbHex(s.r, s.g, s.b, s.a)
+		if s != nil {
+			secondHex8String = "#" + rgbaToArgbHex(s.r, s.g, s.b, s.a)
+		}
 	}
 	return fmt.Sprintf("progid:DXImageTransform.Microsoft.gradient(%sstartColorstr=%s,endColorstr=%s)", gradientType, hex8String, secondHex8String)
 }
 
 // String returns formatted representation of the color according to target or format option
 func (c *Color) String(format ...string) string {
+	if c == nil {
+		return ""
+	}
 	formatStr := ""
 	formatSet := false
 	if len(format) > 0 && format[0] != "" {

@@ -1,5 +1,10 @@
 # Go TinyColor
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/yourusername/tinycolor.svg)](https://pkg.go.dev/github.com/yourusername/tinycolor)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yourusername/tinycolor)](https://goreportcard.com/report/github.com/yourusername/tinycolor)
+[![Build Status](https://github.com/yourusername/tinycolor/actions/workflows/go.yml/badge.svg)](https://github.com/yourusername/tinycolor/actions)
+[![codecov](https://codecov.io/gh/yourusername/tinycolor/branch/main/graph/badge.svg?token=YOUR_TOKEN)](https://codecov.io/gh/yourusername/tinycolor)
+
 A strict, fast, and feature-complete Go port of the popular JavaScript [TinyColor](https://github.com/bgrins/TinyColor) color manipulation and parsing library. 
 
 Developed to achieve 100% behavioral parity with the JavaScript implementation, this Go library handles all inputs, CSS formatting quirks, mathematical conversions, and color manipulations exactly like the original.

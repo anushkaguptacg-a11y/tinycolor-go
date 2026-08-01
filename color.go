@@ -136,26 +136,41 @@ func FromRatio(input interface{}, opts ...Options) *Color {
 
 // IsValid checks if the color was parsed successfully
 func (c *Color) IsValid() bool {
+	if c == nil {
+		return false
+	}
 	return c.ok
 }
 
 // GetOriginalInput returns the original input used to create the Color
 func (c *Color) GetOriginalInput() interface{} {
+	if c == nil {
+		return nil
+	}
 	return c.originalInput
 }
 
 // GetFormat returns the format of the color (e.g. hex, rgb, name, etc.)
 func (c *Color) GetFormat() string {
+	if c == nil {
+		return ""
+	}
 	return c.format
 }
 
 // GetAlpha returns the alpha value of the color
 func (c *Color) GetAlpha() float64 {
+	if c == nil {
+		return 0.0
+	}
 	return c.a
 }
 
 // SetAlpha sets the alpha value of the color
 func (c *Color) SetAlpha(value float64) *Color {
+	if c == nil {
+		return nil
+	}
 	c.a = boundAlpha(value)
 	c.roundA = jsRound(c.a*100.0) / 100.0
 	return c
@@ -163,6 +178,9 @@ func (c *Color) SetAlpha(value float64) *Color {
 
 // Clone creates a new identical copy of the Color instance
 func (c *Color) Clone() *Color {
+	if c == nil {
+		return nil
+	}
 	return &Color{
 		r:             c.r,
 		g:             c.g,
@@ -198,6 +216,9 @@ func Equals(color1, color2 interface{}) bool {
 
 // RGB returns the rounded RGB values and alpha of the color
 func (c *Color) RGB() RGB {
+	if c == nil {
+		return RGB{}
+	}
 	return RGB{
 		R: jsRound(c.r),
 		G: jsRound(c.g),
@@ -208,6 +229,9 @@ func (c *Color) RGB() RGB {
 
 // HSL returns the HSL representation of the color (h in [0, 360], s and l in [0, 1])
 func (c *Color) HSL() HSL {
+	if c == nil {
+		return HSL{}
+	}
 	hsl := rgbToHsl(c.r, c.g, c.b)
 	return HSL{
 		H: hsl.H * 360.0,
@@ -219,6 +243,9 @@ func (c *Color) HSL() HSL {
 
 // HSV returns the HSV representation of the color (h in [0, 360], s and v in [0, 1])
 func (c *Color) HSV() HSV {
+	if c == nil {
+		return HSV{}
+	}
 	hsv := rgbToHsv(c.r, c.g, c.b)
 	return HSV{
 		H: hsv.H * 360.0,
@@ -230,12 +257,18 @@ func (c *Color) HSV() HSV {
 
 // GetBrightness returns the brightness of the color (0-255)
 func (c *Color) GetBrightness() float64 {
+	if c == nil {
+		return 0.0
+	}
 	rgb := c.RGB()
 	return (rgb.R*299.0 + rgb.G*587.0 + rgb.B*114.0) / 1000.0
 }
 
 // GetLuminance returns the relative luminance of the color (0-1)
 func (c *Color) GetLuminance() float64 {
+	if c == nil {
+		return 0.0
+	}
 	rgb := c.RGB()
 	rSRGB := rgb.R / 255.0
 	gSRGB := rgb.G / 255.0
@@ -265,10 +298,16 @@ func (c *Color) GetLuminance() float64 {
 
 // IsDark returns true if the color is dark
 func (c *Color) IsDark() bool {
+	if c == nil {
+		return false
+	}
 	return c.GetBrightness() < 128.0
 }
 
 // IsLight returns true if the color is light
 func (c *Color) IsLight() bool {
+	if c == nil {
+		return false
+	}
 	return !c.IsDark()
 }

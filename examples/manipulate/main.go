@@ -14,7 +14,7 @@ func main() {
 	// Complement (returns a new instance)
 	cOrig := tinycolor.Parse("red")
 	cComp := cOrig.Complement()
-	fmt.Println("Original:", cOrig.HexString(false))   // #ff0000
+	fmt.Println("Original:", cOrig.HexString(false)) // #ff0000
 	fmt.Println("Complement:", cComp.HexString(false)) // #00ffff
 
 	// Triad combinations (returns new instances)

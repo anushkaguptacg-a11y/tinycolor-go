@@ -6,6 +6,18 @@ import (
 
 // applyModification updates the current color instance in-place with new RGB values
 func (c *Color) applyModification(r, g, b, a float64) *Color {
+	if c == nil {
+		return nil
+	}
+	if r < 1.0 {
+		r = jsRound(r)
+	}
+	if g < 1.0 {
+		g = jsRound(g)
+	}
+	if b < 1.0 {
+		b = jsRound(b)
+	}
 	c.r = r
 	c.g = g
 	c.b = b
@@ -16,6 +28,9 @@ func (c *Color) applyModification(r, g, b, a float64) *Color {
 
 // Lighten increases lightness by a given amount (0-100). Supports negative values.
 func (c *Color) Lighten(amount ...int) *Color {
+	if c == nil {
+		return nil
+	}
 	amt := 10
 	if len(amount) > 0 {
 		amt = amount[0]
@@ -23,12 +38,17 @@ func (c *Color) Lighten(amount ...int) *Color {
 	hsl := c.HSL()
 	hsl.L += float64(amt) / 100.0
 	hsl.L = clamp01(hsl.L)
-	rgb := hslToRgb(hsl.H, hsl.S*100.0, hsl.L*100.0)
+	s := convertToPercentage(hsl.S)
+	l := convertToPercentage(hsl.L)
+	rgb := hslToRgb(hsl.H, s, l)
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
 // Darken decreases lightness by a given amount (0-100). Supports negative values.
 func (c *Color) Darken(amount ...int) *Color {
+	if c == nil {
+		return nil
+	}
 	amt := 10
 	if len(amount) > 0 {
 		amt = amount[0]
@@ -36,12 +56,17 @@ func (c *Color) Darken(amount ...int) *Color {
 	hsl := c.HSL()
 	hsl.L -= float64(amt) / 100.0
 	hsl.L = clamp01(hsl.L)
-	rgb := hslToRgb(hsl.H, hsl.S*100.0, hsl.L*100.0)
+	s := convertToPercentage(hsl.S)
+	l := convertToPercentage(hsl.L)
+	rgb := hslToRgb(hsl.H, s, l)
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
 // Brighten increases brightness by a given amount (0-100). Supports negative values.
 func (c *Color) Brighten(amount ...int) *Color {
+	if c == nil {
+		return nil
+	}
 	amt := 10
 	if len(amount) > 0 {
 		amt = amount[0]
@@ -55,6 +80,9 @@ func (c *Color) Brighten(amount ...int) *Color {
 
 // Saturate increases saturation by a given amount (0-100). Supports negative values.
 func (c *Color) Saturate(amount ...int) *Color {
+	if c == nil {
+		return nil
+	}
 	amt := 10
 	if len(amount) > 0 {
 		amt = amount[0]
@@ -62,12 +90,17 @@ func (c *Color) Saturate(amount ...int) *Color {
 	hsl := c.HSL()
 	hsl.S += float64(amt) / 100.0
 	hsl.S = clamp01(hsl.S)
-	rgb := hslToRgb(hsl.H, hsl.S*100.0, hsl.L*100.0)
+	s := convertToPercentage(hsl.S)
+	l := convertToPercentage(hsl.L)
+	rgb := hslToRgb(hsl.H, s, l)
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
 // Desaturate decreases saturation by a given amount (0-100). Supports negative values.
 func (c *Color) Desaturate(amount ...int) *Color {
+	if c == nil {
+		return nil
+	}
 	amt := 10
 	if len(amount) > 0 {
 		amt = amount[0]
@@ -75,24 +108,34 @@ func (c *Color) Desaturate(amount ...int) *Color {
 	hsl := c.HSL()
 	hsl.S -= float64(amt) / 100.0
 	hsl.S = clamp01(hsl.S)
-	rgb := hslToRgb(hsl.H, hsl.S*100.0, hsl.L*100.0)
+	s := convertToPercentage(hsl.S)
+	l := convertToPercentage(hsl.L)
+	rgb := hslToRgb(hsl.H, s, l)
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
 // Greyscale completely desaturates the color (amount = 100)
 func (c *Color) Greyscale() *Color {
+	if c == nil {
+		return nil
+	}
 	return c.Desaturate(100)
 }
 
 // Spin rotates the hue by a given degree angle. Angle wraps around [0, 360].
 func (c *Color) Spin(amount float64) *Color {
+	if c == nil {
+		return nil
+	}
 	hsl := c.HSL()
 	hue := math.Mod(hsl.H+amount, 360.0)
 	if hue < 0 {
 		hue = 360.0 + hue
 	}
 	hsl.H = hue
-	rgb := hslToRgb(hsl.H, hsl.S*100.0, hsl.L*100.0)
+	s := convertToPercentage(hsl.S)
+	l := convertToPercentage(hsl.L)
+	rgb := hslToRgb(hsl.H, s, l)
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
@@ -112,7 +155,16 @@ func Mix(color1, color2 interface{}, amount ...int) *Color {
 	r := (rgb2.R-rgb1.R)*p + rgb1.R
 	g := (rgb2.G-rgb1.G)*p + rgb1.G
 	b := (rgb2.B-rgb1.B)*p + rgb1.B
-	a := (c2.a-c1.a)*p + c1.a
+
+	c1a := 0.0
+	if c1 != nil {
+		c1a = c1.a
+	}
+	c2a := 0.0
+	if c2 != nil {
+		c2a = c2.a
+	}
+	a := (c2a-c1a)*p + c1a
 
 	return Parse(RGB{
 		R: r,
@@ -124,6 +176,9 @@ func Mix(color1, color2 interface{}, amount ...int) *Color {
 
 // Complement returns the complementary color (rotated 180 degrees)
 func (c *Color) Complement() *Color {
+	if c == nil {
+		return nil
+	}
 	hsl := c.HSL()
 	hsl.H = math.Mod(hsl.H+180.0, 360.0)
 	return Parse(hsl)
@@ -131,6 +186,9 @@ func (c *Color) Complement() *Color {
 
 // Analogous returns a list of analogous colors
 func (c *Color) Analogous(resultsAndSlices ...int) []*Color {
+	if c == nil {
+		return nil
+	}
 	res := 6
 	if len(resultsAndSlices) > 0 {
 		res = resultsAndSlices[0]
@@ -154,6 +212,9 @@ func (c *Color) Analogous(resultsAndSlices ...int) []*Color {
 
 // Monochromatic returns a list of monochromatic colors
 func (c *Color) Monochromatic(results ...int) []*Color {
+	if c == nil {
+		return nil
+	}
 	res := 6
 	if len(results) > 0 {
 		res = results[0]
@@ -172,6 +233,9 @@ func (c *Color) Monochromatic(results ...int) []*Color {
 
 // SplitComplement returns a list of split complementary colors
 func (c *Color) SplitComplement() []*Color {
+	if c == nil {
+		return nil
+	}
 	hsl := c.HSL()
 	return []*Color{
 		c.Clone(),
@@ -182,6 +246,9 @@ func (c *Color) SplitComplement() []*Color {
 
 // polyad is helper for triad and tetrad
 func (c *Color) polyad(number int) []*Color {
+	if c == nil {
+		return nil
+	}
 	hsl := c.HSL()
 	result := []*Color{c.Clone()}
 	step := 360.0 / float64(number)
@@ -198,10 +265,16 @@ func (c *Color) polyad(number int) []*Color {
 
 // Triad returns a list of triad colors
 func (c *Color) Triad() []*Color {
+	if c == nil {
+		return nil
+	}
 	return c.polyad(3)
 }
 
 // Tetrad returns a list of tetrad colors
 func (c *Color) Tetrad() []*Color {
+	if c == nil {
+		return nil
+	}
 	return c.polyad(4)
 }

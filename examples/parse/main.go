@@ -12,9 +12,9 @@ func main() {
 	c3 := tinycolor.Parse("#ff0000")
 	c4 := tinycolor.Parse("#ff0000ff")
 
-	fmt.Println("c1 Hex:", c1.HexString(false))   // #ff0000
+	fmt.Println("c1 Hex:", c1.HexString(false)) // #ff0000
 	fmt.Println("c2 Hex8:", c2.Hex8String(false)) // #ff0000ff
-	fmt.Println("c3 Hex:", c3.HexString(false))   // #ff0000
+	fmt.Println("c3 Hex:", c3.HexString(false)) // #ff0000
 	fmt.Println("c4 Hex8:", c4.Hex8String(false)) // #ff0000ff
 
 	// Parse from CSS color names
@@ -26,7 +26,7 @@ func main() {
 	c7 := tinycolor.Parse(tinycolor.HSV{H: 240, S: 0.6, V: 0.8})
 	c8 := tinycolor.Parse(tinycolor.RGB{R: 128, G: 128, B: 128})
 
-	fmt.Println("c6 RGB:", c6.RGBString())      // rgb(64, 191, 64)
+	fmt.Println("c6 RGB:", c6.RGBString()) // rgb(64, 191, 64)
 	fmt.Println("c7 Hex:", c7.HexString(false)) // #5151cc
-	fmt.Println("c8 HSL:", c8.HSLString())      // hsl(0, 0%, 50%)
+	fmt.Println("c8 HSL:", c8.HSLString()) // hsl(0, 0%, 50%)
 }

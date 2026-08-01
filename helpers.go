@@ -168,23 +168,6 @@ func convertHexToDecimal(h string) float64 {
 	return float64(parseIntFromHex(h)) / 255.0
 }
 
-// toFloat64 converts heterogeneous inputs to float64 safely
-func toFloat64(v interface{}) float64 {
-	switch val := v.(type) {
-	case float64:
-		return val
-	case float32:
-		return float64(val)
-	case int:
-		return float64(val)
-	case int64:
-		return float64(val)
-	case string:
-		return parseFloat(val)
-	default:
-		return 0.0
-	}
-}
 
 // jsRound emulates JavaScript Math.round exactly
 func jsRound(x float64) float64 {

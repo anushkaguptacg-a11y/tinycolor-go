@@ -543,6 +543,75 @@ func TestFormattingAndSerialization(t *testing.T) {
 		t.Error("expected false for #fa0a0a")
 	}
 
+	// 5b. Direct testing for PercentageRGB, PercentageRGBString, and HSLString
+	cPerc := Parse("rgb(255, 0, 128)")
+	prgb := cPerc.PercentageRGB()
+	if prgb.R != "100%" || prgb.G != "0%" || prgb.B != "50%" || prgb.A != 1.0 {
+		t.Errorf("PercentageRGB() mismatch: got R:%s G:%s B:%s A:%f", prgb.R, prgb.G, prgb.B, prgb.A)
+	}
+
+	pStr := cPerc.PercentageRGBString()
+	if pStr != "rgb(100%, 0%, 50%)" {
+		t.Errorf("expected rgb(100%%, 0%%, 50%%), got %s", pStr)
+	}
+
+	cPercAlpha := Parse("rgba(255, 0, 128, 0.5)")
+	prgbAlpha := cPercAlpha.PercentageRGB()
+	if prgbAlpha.R != "100%" || prgbAlpha.G != "0%" || prgbAlpha.B != "50%" || prgbAlpha.A != 0.5 {
+		t.Errorf("PercentageRGB() with alpha mismatch: got R:%s G:%s B:%s A:%f", prgbAlpha.R, prgbAlpha.G, prgbAlpha.B, prgbAlpha.A)
+	}
+
+	pStrAlpha := cPercAlpha.PercentageRGBString()
+	if pStrAlpha != "rgba(100%, 0%, 50%, 0.5)" {
+		t.Errorf("expected rgba(100%%, 0%%, 50%%, 0.5), got %s", pStrAlpha)
+	}
+
+	hslStr := Parse("red").HSLString()
+	if hslStr != "hsl(0, 100%, 50%)" {
+		t.Errorf("expected hsl(0, 100%%, 50%%), got %s", hslStr)
+	}
+
+	hslStrAlpha := Parse("rgba(255, 0, 0, 0.5)").HSLString()
+	if hslStrAlpha != "hsla(0, 100%, 50%, 0.5)" {
+		t.Errorf("expected hsla(0, 100%%, 50%%, 0.5), got %s", hslStrAlpha)
+	}
+
+	// 5c. Nil receiver safety testing
+	var cNil *Color = nil
+	if cNil.IsValid() {
+		t.Error("expected false for nil.IsValid()")
+	}
+	if cNil.GetOriginalInput() != nil {
+		t.Error("expected nil for nil.GetOriginalInput()")
+	}
+	if cNil.GetFormat() != "" {
+		t.Error("expected empty format for nil.GetFormat()")
+	}
+	if cNil.GetAlpha() != 0.0 {
+		t.Error("expected 0.0 alpha for nil.GetAlpha()")
+	}
+	if cNil.SetAlpha(0.5) != nil {
+		t.Error("expected nil for nil.SetAlpha()")
+	}
+	if cNil.Clone() != nil {
+		t.Error("expected nil for nil.Clone()")
+	}
+	if cNil.RGBString() != "" {
+		t.Error("expected empty string for nil.RGBString()")
+	}
+	if cNil.HSLString() != "" {
+		t.Error("expected empty string for nil.HSLString()")
+	}
+	if cNil.Lighten(10) != nil {
+		t.Error("expected nil for nil.Lighten()")
+	}
+	if cNil.Complement() != nil {
+		t.Error("expected nil for nil.Complement()")
+	}
+	if cNil.Triad() != nil {
+		t.Error("expected nil for nil.Triad()")
+	}
+
 	// 6. Invalid Alpha Normalization
 	cAlphaNeg := Parse(map[string]interface{}{"r": 255.0, "g": 20.0, "b": 10.0, "a": -1.0})
 	if cAlphaNeg.RGBString() != "rgb(255, 20, 10)" {
@@ -700,6 +769,8 @@ func TestFormattingAndSerialization(t *testing.T) {
 		t.Errorf("expected %s, got %s", expectedFilter2, cFilter1.Filter("rgba(0, 255, 0, 1)"))
 	}
 }
+
+
 
 func BenchmarkParse(b *testing.B) {
 	inputs := []string{
