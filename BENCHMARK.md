@@ -21,7 +21,7 @@ Command used:
 go test -bench=. -benchmem
 ```
 
-Each benchmark was executed multiple times by Go's benchmark runner until statistically stable results were obtained.
+Go's benchmarking framework automatically executes each benchmark multiple times to produce stable timing and allocation measurements.
 
 ---
 
@@ -39,7 +39,7 @@ Each benchmark was executed multiple times by Go's benchmark runner until statis
 
 Representative benchmark results include memory allocation statistics reported by `go test -benchmem`.
 
-The implementation is designed to minimize allocations while preserving behavioral compatibility with the original JavaScript implementation.
+Memory allocation statistics are included as reported by go test -benchmem to provide additional context for the benchmark results.
 
 ---
 
@@ -54,10 +54,10 @@ Direct performance comparisons are not meaningful because:
 - Different garbage collectors
 - Different optimization strategies
 
-Instead, this project focuses on preserving behavioral compatibility while providing efficient native Go performance.
+The benchmarks are intended to document the performance of this Go implementation rather than compare execution speed across languages.
 
 ---
 
 ## Conclusion
 
-TinyColor-Go provides a fast, idiomatic Go implementation with comprehensive testing, low allocation overhead, and behavior closely matching the original TinyColor JavaScript library.
+This benchmark report provides baseline performance measurements for the current implementation. The results can be used to track future performance changes as the project evolves.
