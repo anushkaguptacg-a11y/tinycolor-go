@@ -15,6 +15,24 @@ type parsedInput struct {
 	ok      bool
 }
 
+// alphaFrom pulls a float64 out of whatever type an "a" field came in as
+// (string, float64/32, int). Anything else, including nil, defaults to 1.0 -
+// this gets fed straight into boundAlpha afterwards anyway.
+func alphaFrom(val interface{}) float64 {
+	switch v := val.(type) {
+	case string:
+		return parseFloat(v)
+	case float64:
+		return v
+	case float32:
+		return float64(v)
+	case int:
+		return float64(v)
+	default:
+		return 1.0
+	}
+}
+
 // stringInputToObject parses a CSS/HTML string into raw string component tokens
 func stringInputToObject(color string) parsedInput {
 	color = trimLeftReg.ReplaceAllString(color, "")
@@ -222,13 +240,7 @@ func inputToRGB(input interface{}) rgbResult {
 			rgb.g = bound01(parsed.g, 255) * 255.0
 			rgb.b = bound01(parsed.b, 255) * 255.0
 
-			var aVal float64
-			if s, ok := parsed.a.(string); ok {
-				aVal = parseFloat(s)
-			} else if f, ok := parsed.a.(float64); ok {
-				aVal = f
-			}
-			rgb.a = boundAlpha(aVal)
+			rgb.a = boundAlpha(alphaFrom(parsed.a))
 			rgb.ok = true
 			return rgbResult{
 				r:      math.Min(255, math.Max(rgb.r, 0)),
@@ -245,16 +257,10 @@ func inputToRGB(input interface{}) rgbResult {
 			l := convertToPercentage(parsed.l)
 			converted := hslToRgb(parsed.h, s, l)
 
-			var aVal float64
-			if s, ok := parsed.a.(string); ok {
-				aVal = parseFloat(s)
-			} else if f, ok := parsed.a.(float64); ok {
-				aVal = f
-			}
 			rgb.r = converted.R
 			rgb.g = converted.G
 			rgb.b = converted.B
-			rgb.a = boundAlpha(aVal)
+			rgb.a = boundAlpha(alphaFrom(parsed.a))
 			rgb.ok = true
 			return rgbResult{
 				r:      math.Min(255, math.Max(rgb.r, 0)),
@@ -271,16 +277,10 @@ func inputToRGB(input interface{}) rgbResult {
 			v := convertToPercentage(parsed.v)
 			converted := hsvToRgb(parsed.h, s, v)
 
-			var aVal float64
-			if s, ok := parsed.a.(string); ok {
-				aVal = parseFloat(s)
-			} else if f, ok := parsed.a.(float64); ok {
-				aVal = f
-			}
 			rgb.r = converted.R
 			rgb.g = converted.G
 			rgb.b = converted.B
-			rgb.a = boundAlpha(aVal)
+			rgb.a = boundAlpha(alphaFrom(parsed.a))
 			rgb.ok = true
 			return rgbResult{
 				r:      math.Min(255, math.Max(rgb.r, 0)),
@@ -337,16 +337,7 @@ func inputToRGB(input interface{}) rgbResult {
 		}
 		if val, exists := m["a"]; exists && val != nil {
 			hasA = true
-			switch v := val.(type) {
-			case float64:
-				a = v
-			case float32:
-				a = float64(v)
-			case int:
-				a = float64(v)
-			case string:
-				a = parseFloat(v)
-			}
+			a = alphaFrom(val)
 		}
 	} else {
 		switch v := input.(type) {
@@ -359,16 +350,7 @@ func inputToRGB(input interface{}) rgbResult {
 				rgb.format = "rgb"
 				if v.A != nil {
 					hasA = true
-					switch va := v.A.(type) {
-					case float64:
-						a = va
-					case float32:
-						a = float64(va)
-					case int:
-						a = float64(va)
-					case string:
-						a = parseFloat(va)
-					}
+					a = alphaFrom(v.A)
 				}
 			}
 		case HSL:
@@ -383,16 +365,7 @@ func inputToRGB(input interface{}) rgbResult {
 				rgb.format = "hsl"
 				if v.A != nil {
 					hasA = true
-					switch va := v.A.(type) {
-					case float64:
-						a = va
-					case float32:
-						a = float64(va)
-					case int:
-						a = float64(va)
-					case string:
-						a = parseFloat(va)
-					}
+					a = alphaFrom(v.A)
 				}
 			}
 		case HSV:
@@ -407,16 +380,7 @@ func inputToRGB(input interface{}) rgbResult {
 				rgb.format = "hsv"
 				if v.A != nil {
 					hasA = true
-					switch va := v.A.(type) {
-					case float64:
-						a = va
-					case float32:
-						a = float64(va)
-					case int:
-						a = float64(va)
-					case string:
-						a = parseFloat(va)
-					}
+					a = alphaFrom(v.A)
 				}
 			}
 		}

@@ -4,7 +4,12 @@ import (
 	"math"
 )
 
-// applyModification updates the current color instance in-place with new RGB values
+// applyModification writes new RGB(A) values back onto the receiver after a
+// manipulation like Lighten/Darken/Saturate. This mirrors what Parse() does
+// in color.go for the same reason: values under 1.0 get rounded immediately
+// to resolve the 0-255-vs-0-1 ambiguity, but values >= 1.0 are left as
+// floats so precision survives chained calls (Lighten().Darken()...), same
+// as tinycolor2's constructor path.
 func (c *Color) applyModification(r, g, b, a float64) *Color {
 	if c == nil {
 		return nil
@@ -22,11 +27,13 @@ func (c *Color) applyModification(r, g, b, a float64) *Color {
 	c.g = g
 	c.b = b
 	c.a = boundAlpha(a)
-	c.roundA = math.Round(c.a*100.0) / 100.0
+	c.roundA = jsRound(c.a*100.0) / 100.0
 	return c
 }
 
-// Lighten increases lightness by a given amount (0-100). Supports negative values.
+// Lighten bumps up the L channel of the color's HSL representation. amount
+// defaults to 10 and is a percentage, so Lighten(20) moves L up by 0.2.
+// Negative amounts work too (same as calling Darken).
 func (c *Color) Lighten(amount ...int) *Color {
 	if c == nil {
 		return nil
@@ -44,7 +51,7 @@ func (c *Color) Lighten(amount ...int) *Color {
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
-// Darken decreases lightness by a given amount (0-100). Supports negative values.
+// Darken is Lighten with the sign flipped.
 func (c *Color) Darken(amount ...int) *Color {
 	if c == nil {
 		return nil
@@ -62,7 +69,8 @@ func (c *Color) Darken(amount ...int) *Color {
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
-// Brighten increases brightness by a given amount (0-100). Supports negative values.
+// Brighten works directly on RGB rather than going through HSL like the
+// other adjustments - that's how tinycolor2 does it too, so keeping it here.
 func (c *Color) Brighten(amount ...int) *Color {
 	if c == nil {
 		return nil
@@ -78,7 +86,7 @@ func (c *Color) Brighten(amount ...int) *Color {
 	return c.applyModification(r, g, b, c.a)
 }
 
-// Saturate increases saturation by a given amount (0-100). Supports negative values.
+// Saturate pushes the S channel up by amount/100 (default 10%).
 func (c *Color) Saturate(amount ...int) *Color {
 	if c == nil {
 		return nil
@@ -96,7 +104,7 @@ func (c *Color) Saturate(amount ...int) *Color {
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
-// Desaturate decreases saturation by a given amount (0-100). Supports negative values.
+// Desaturate is the inverse of Saturate.
 func (c *Color) Desaturate(amount ...int) *Color {
 	if c == nil {
 		return nil
@@ -114,7 +122,7 @@ func (c *Color) Desaturate(amount ...int) *Color {
 	return c.applyModification(rgb.R, rgb.G, rgb.B, c.a)
 }
 
-// Greyscale completely desaturates the color (amount = 100)
+// Greyscale is just Desaturate(100).
 func (c *Color) Greyscale() *Color {
 	if c == nil {
 		return nil
@@ -122,7 +130,7 @@ func (c *Color) Greyscale() *Color {
 	return c.Desaturate(100)
 }
 
-// Spin rotates the hue by a given degree angle. Angle wraps around [0, 360].
+// Spin rotates hue by the given number of degrees, wrapping into [0, 360).
 func (c *Color) Spin(amount float64) *Color {
 	if c == nil {
 		return nil

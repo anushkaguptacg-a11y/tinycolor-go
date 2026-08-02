@@ -74,7 +74,9 @@ func Parse(input interface{}, opts ...Options) *Color {
 		return c
 	}
 
-	// If input is already *Color, return it
+	// If input is already *Color, hand back the same instance - this matches
+	// tinycolor2's `instanceof` check in the JS source, which also returns
+	// the original reference rather than a copy. Not a missed Clone().
 	if color, ok := input.(*Color); ok {
 		return color
 	}
@@ -121,7 +123,11 @@ func Parse(input interface{}, opts ...Options) *Color {
 	return c
 }
 
-// FromRatio initializes a Color from ratio inputs (all in [0,1])
+// FromRatio initializes a Color from ratio inputs (all in [0,1]).
+// Only RGB needs special handling here: inputToRGB's HSL/HSV branches
+// already run S/L/V through convertToPercentage, so ratio values there
+// resolve correctly through a plain Parse() call. RGB's branch doesn't do
+// that conversion, so the *255 below is what actually makes ratios work.
 func FromRatio(input interface{}, opts ...Options) *Color {
 	if rgb, ok := input.(RGB); ok {
 		return Parse(RGB{

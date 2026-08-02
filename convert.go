@@ -210,7 +210,7 @@ func rgbaToHex(r, g, b, a float64, allow4Char bool) string {
 		pad2(strconv.FormatInt(int64(jsRound(r)), 16)),
 		pad2(strconv.FormatInt(int64(jsRound(g)), 16)),
 		pad2(strconv.FormatInt(int64(jsRound(b)), 16)),
-		pad2(convertDecimalToHex(strconv.FormatFloat(a, 'f', -1, 64))),
+		pad2(convertDecimalToHexFloat(a)),
 	}
 
 	if allow4Char && hex[0][0] == hex[0][1] && hex[1][0] == hex[1][1] && hex[2][0] == hex[2][1] && hex[3][0] == hex[3][1] {
@@ -222,7 +222,7 @@ func rgbaToHex(r, g, b, a float64, allow4Char bool) string {
 // rgbaToArgbHex converts an RGBA color to an ARGB Hex8 string (required for toFilter)
 func rgbaToArgbHex(r, g, b, a float64) string {
 	hex := []string{
-		pad2(convertDecimalToHex(strconv.FormatFloat(a, 'f', -1, 64))),
+		pad2(convertDecimalToHexFloat(a)),
 		pad2(strconv.FormatInt(int64(jsRound(r)), 16)),
 		pad2(strconv.FormatInt(int64(jsRound(g)), 16)),
 		pad2(strconv.FormatInt(int64(jsRound(b)), 16)),

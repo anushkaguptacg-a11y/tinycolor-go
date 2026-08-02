@@ -155,19 +155,24 @@ func convertToPercentage(n interface{}) interface{} {
 
 // convertDecimalToHex converts a decimal in [0,1] to a hex integer representation.
 func convertDecimalToHex(d string) string {
-	val := jsRound(parseFloat(d) * 255.0)
+	return convertDecimalToHexFloat(parseFloat(d))
+}
+
+// convertDecimalToHexFloat is the same conversion as convertDecimalToHex but
+// takes the float directly, for callers that already have one on hand
+// instead of a parsed string (avoids a pointless format-then-reparse).
+func convertDecimalToHexFloat(d float64) string {
+	val := jsRound(d * 255.0)
 	if math.IsNaN(val) {
 		val = 255.0
 	}
-	h := strconv.FormatInt(int64(val), 16)
-	return h
+	return strconv.FormatInt(int64(val), 16)
 }
 
 // convertHexToDecimal converts a hex string back to a float in [0,1].
 func convertHexToDecimal(h string) float64 {
 	return float64(parseIntFromHex(h)) / 255.0
 }
-
 
 // jsRound emulates JavaScript Math.round exactly
 func jsRound(x float64) float64 {

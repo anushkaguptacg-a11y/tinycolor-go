@@ -1,6 +1,6 @@
 # TinyColor-Go
 
-![Go Version](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go&logoColor=white)
+![Go Version](https://img.shields.io/badge/Go-1.21+-00ADD8?logo=go&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 [![CI](https://github.com/anushkaguptacg-a11y/tinycolor-go/actions/workflows/go.yml/badge.svg)](https://github.com/anushkaguptacg-a11y/tinycolor-go/actions/workflows/go.yml)
 
