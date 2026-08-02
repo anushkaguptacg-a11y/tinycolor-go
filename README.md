@@ -4,9 +4,9 @@
 ![License](https://img.shields.io/badge/License-MIT-green.svg)
 [![CI](https://github.com/anushkaguptacg-a11y/tinycolor-go/actions/workflows/go.yml/badge.svg)](https://github.com/anushkaguptacg-a11y/tinycolor-go/actions/workflows/go.yml)
 
-A feature-complete Go port of the original JavaScript **TinyColor** library with strict behavioral compatibility, comprehensive testing, WCAG accessibility utilities, and GitHub Actions CI.
+A Go implementation of the original JavaScript TinyColor library, focused on preserving its parsing behavior, color conversions, formatting, manipulation utilities, and accessibility helpers while following idiomatic Go practices.
 
-This project preserves TinyColor's parsing quirks, conversion logic, formatting behavior, manipulation semantics, and edge cases while providing an idiomatic Go API.
+The implementation was developed by comparing behavior with the original TinyColor library and includes compatibility tests, examples, CI, and benchmark results to help validate the port.
 
 ---
 
