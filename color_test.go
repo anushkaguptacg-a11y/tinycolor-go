@@ -617,7 +617,9 @@ func TestFormattingAndSerialization(t *testing.T) {
 	if cAlphaNeg.RGBString() != "rgb(255, 20, 10)" {
 		t.Errorf("expected rgb(255, 20, 10), got %s", cAlphaNeg.RGBString())
 	}
-	cAlphaNegZero := Parse(map[string]interface{}{"r": 255.0, "g": 20.0, "b": 10.0, "a": -0.0})
+	// Note: a literal -0.0 here would be folded to 0.0 by the compiler (SA4026),
+	// so this uses math.Copysign to get a genuine negative-zero float at runtime.
+	cAlphaNegZero := Parse(map[string]interface{}{"r": 255.0, "g": 20.0, "b": 10.0, "a": math.Copysign(0, -1)})
 	if cAlphaNegZero.RGBString() != "rgba(255, 20, 10, 0)" {
 		t.Errorf("expected rgba(255, 20, 10, 0), got %s", cAlphaNegZero.RGBString())
 	}
@@ -769,8 +771,6 @@ func TestFormattingAndSerialization(t *testing.T) {
 		t.Errorf("expected %s, got %s", expectedFilter2, cFilter1.Filter("rgba(0, 255, 0, 1)"))
 	}
 }
-
-
 
 func BenchmarkParse(b *testing.B) {
 	inputs := []string{
