@@ -43,9 +43,9 @@ This matches the behavior of the original JavaScript implementation while remain
 
 ## 4. Behavioral Compatibility
 
-The primary design goal was behavioral compatibility rather than reimplementation.
+The primary design goal was to preserve the observable behavior of the original TinyColor library while implementing it using idiomatic Go.
 
-Parsing behavior, conversion algorithms, formatting rules, rounding behavior, readability calculations, and manipulation semantics were preserved as closely as possible.
+Parsing behavior, conversion algorithms, formatting rules, rounding behavior, readability calculations, and manipulation semantics were implemented to closely match the behavior of the original library.
 
 ---
 
@@ -58,7 +58,7 @@ The project includes:
 - Differential testing against the JavaScript implementation
 - GitHub Actions continuous integration
 
-This combination provides confidence that the Go implementation behaves consistently with the original library.
+These validation methods were used throughout development to compare the Go implementation with the original JavaScript library and detect behavioral differences.
 
 ---
 
@@ -84,4 +84,4 @@ on every push and pull request.
 
 ## Conclusion
 
-The goal of TinyColor-Go is to remain as faithful as possible to the original TinyColor library while embracing standard Go project organization, tooling, testing, and package conventions.
+This project adapts TinyColor to Go while preserving its behavior where practical and following standard Go project conventions for packaging, testing, and tooling.
